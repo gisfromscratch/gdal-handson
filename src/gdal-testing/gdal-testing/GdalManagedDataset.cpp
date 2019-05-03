@@ -30,6 +30,24 @@ bool GdalManagedDataset::is_valid()
 }
 
 
+std::list<std::string> GdalManagedDataset::get_layer_names()
+{
+	std::list<std::string> layer_names;
+	if (nullptr == m_dataset)
+	{
+		return layer_names;
+	}
+
+	for (auto &&layer : m_dataset->GetLayers())
+	{
+		auto layer_name = std::string(layer->GetName());
+		layer_names.push_back(layer_name);
+	}
+	
+	return layer_names;
+}
+
+
 OGRLayer* GdalManagedDataset::get_layer(const std::string &layer_name)
 {
 	if (nullptr == m_dataset)

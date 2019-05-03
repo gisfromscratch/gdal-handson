@@ -15,6 +15,8 @@
  */
 
 #include "pch.h"
+
+#include <iostream>
 #include "GdalTestSuite.h"
 #include "GdalManagedDataset.h"
 
@@ -26,6 +28,13 @@ TEST_F(GdalTestSuite, ReadGeoJson) {
 	auto dataset = GdalManagedDataset::open_read(filepath);
 	EXPECT_TRUE(dataset->is_valid()) << "Dataset is valid.";
 
+	auto layer_names = dataset->get_layer_names();
+	EXPECT_FALSE(layer_names.empty()) << "Layer names must not be empty.";
+	for (auto &&layer_name : layer_names)
+	{
+		auto layer = dataset->get_layer(layer_name);
+		EXPECT_NE(nullptr, layer) << "Layer must not be nullptr.";
+	}
 }
 
 int main(int argc, wchar_t* argv[])

@@ -30,6 +30,12 @@ public:
 	bool is_valid();
 
 	/**
+		Gets the names of all layers.
+		@return names of all layers managed by this dataset.
+	*/
+	std::list<std::string> get_layer_names();
+
+	/**
 		Gets a layer from this dataset using its name.
 		@return layer or null if the layer is not managed by this dataset.
 	*/
