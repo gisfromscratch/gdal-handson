@@ -30,6 +30,17 @@ bool GdalManagedDataset::is_valid()
 }
 
 
+OGRLayer* GdalManagedDataset::get_layer(const std::string &layer_name)
+{
+	if (nullptr == m_dataset)
+	{
+		return nullptr;
+	}
+
+	return m_dataset->GetLayerByName(layer_name.c_str());
+}
+
+
 std::shared_ptr<GdalManagedDataset> GdalManagedDataset::open_read(const std::string &filepath)
 {
 	auto raw_dataset = reinterpret_cast<GDALDataset*>(GDALOpenEx(filepath.c_str(), GDAL_OF_VECTOR, nullptr, nullptr, nullptr));

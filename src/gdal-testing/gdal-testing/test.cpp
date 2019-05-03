@@ -25,6 +25,7 @@ TEST_F(GdalTestSuite, ReadGeoJson) {
 	auto filepath = GdalTestSuite::to_path("geojson.json");
 	auto dataset = GdalManagedDataset::open_read(filepath);
 	EXPECT_TRUE(dataset->is_valid()) << "Dataset is valid.";
+
 }
 
 int main(int argc, wchar_t* argv[])

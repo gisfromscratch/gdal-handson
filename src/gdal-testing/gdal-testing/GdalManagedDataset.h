@@ -23,7 +23,17 @@ class GdalManagedDataset
 public:
 	~GdalManagedDataset();
 
+	/**
+		Validates if this dataset is accessible and can be queried.
+		@return true if this dataset is valid.
+	*/
 	bool is_valid();
+
+	/**
+		Gets a layer from this dataset using its name.
+		@return layer or null if the layer is not managed by this dataset.
+	*/
+	OGRLayer* get_layer(const std::string &layer_name);
 
 	static std::shared_ptr<GdalManagedDataset> open_read(const std::string &filepath);
 
