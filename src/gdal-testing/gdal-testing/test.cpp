@@ -34,6 +34,12 @@ TEST_F(GdalTestSuite, ReadGeoJson) {
 	{
 		auto layer = dataset->get_layer(layer_name);
 		EXPECT_NE(nullptr, layer) << "Layer must not be nullptr.";
+
+		for (auto &&feature : layer)
+		{
+			auto geometry = feature->GetGeometryRef();
+			EXPECT_FALSE(geometry->IsEmpty()) << "Geometry must not be empty.";
+		}
 	}
 }
 
