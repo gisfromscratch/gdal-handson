@@ -59,10 +59,10 @@ OGRLayer* GdalManagedDataset::get_layer(const std::string &layer_name)
 }
 
 
-std::shared_ptr<GdalManagedDataset> GdalManagedDataset::open_read(const std::string &filepath)
+std::unique_ptr<GdalManagedDataset> GdalManagedDataset::open_read(const std::string &filepath)
 {
 	auto raw_dataset = reinterpret_cast<GDALDataset*>(GDALOpenEx(filepath.c_str(), GDAL_OF_VECTOR, nullptr, nullptr, nullptr));
-	return std::shared_ptr<GdalManagedDataset>(new GdalManagedDataset(raw_dataset));
+	return std::unique_ptr<GdalManagedDataset>(new GdalManagedDataset(raw_dataset));
 }
 
 

@@ -41,7 +41,7 @@ public:
 	*/
 	OGRLayer* get_layer(const std::string &layer_name);
 
-	static std::shared_ptr<GdalManagedDataset> open_read(const std::string &filepath);
+	static std::unique_ptr<GdalManagedDataset> open_read(const std::string &filepath);
 
 protected:
 	GdalManagedDataset(GDALDataset *dataset);
