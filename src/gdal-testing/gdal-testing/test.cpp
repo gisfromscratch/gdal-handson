@@ -84,6 +84,14 @@ TEST_F(GdalTestSuite, FilterGeoJson) {
 		EXPECT_FALSE(ids.empty()) << "At least one feature must be found.";
 		EXPECT_FALSE(strecken_ids.end() == std::find(strecken_ids.begin(), strecken_ids.end(), 47)) << "Strecke 47 must be found.";
 		EXPECT_FALSE(strecken_ids.end() == std::find(strecken_ids.begin(), strecken_ids.end(), 48)) << "Strecke 48 must be found.";
+
+		layer->SetSpatialFilter(nullptr);
+		layer->SetAttributeFilter("strecke_id=17 OR strecke_id=18");
+		for (auto &&feature : layer)
+		{
+			auto strecke_id = feature->GetFieldAsInteger("strecke_id");
+			EXPECT_TRUE(18 == strecke_id || 17 == strecke_id) << "Only Strecke 17 or 18 must be found.";
+		}
 	}
 }
 
