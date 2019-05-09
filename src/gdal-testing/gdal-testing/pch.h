@@ -8,6 +8,7 @@
 #include <list>
 #include <string>
 #include <sstream>
+#include <vector>
 
 #include "boost/filesystem.hpp"
 #include "gtest/gtest.h"

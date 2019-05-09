@@ -36,10 +36,12 @@
     <ClInclude Include="GdalManagedDataset.h" />
     <ClInclude Include="GdalTestSuite.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="SpatialMatcher.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GdalManagedDataset.cpp" />
     <ClCompile Include="GdalTestSuite.cpp" />
+    <ClCompile Include="SpatialMatcher.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

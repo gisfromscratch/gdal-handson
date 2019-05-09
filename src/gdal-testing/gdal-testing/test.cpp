@@ -19,6 +19,7 @@
 #include <iostream>
 #include "GdalTestSuite.h"
 #include "GdalManagedDataset.h"
+#include "SpatialMatcher.h"
 
 /**
 	Reads a GeoJSON file from the local hard drive.
@@ -93,6 +94,42 @@ TEST_F(GdalTestSuite, FilterGeoJson) {
 			EXPECT_TRUE(18 == strecke_id || 17 == strecke_id) << "Only Strecke 17 or 18 must be found.";
 		}
 	}
+}
+
+
+TEST_F(GdalTestSuite, ReadGeopackage) {
+	auto filepath = GdalTestSuite::to_path("Strassennamen.gpkg");
+	auto dataset = GdalManagedDataset::open_read(filepath);
+	EXPECT_TRUE(dataset->is_valid()) << "Dataset is valid.";
+
+	auto layer_names = dataset->get_layer_names();
+	EXPECT_FALSE(layer_names.empty()) << "Layer names must not be empty.";
+	for (auto &&layer_name : layer_names)
+	{
+		auto layer = dataset->get_layer(layer_name);
+		EXPECT_NE(nullptr, layer) << "Layer must not be nullptr.";
+
+		for (auto &&feature : layer)
+		{
+			auto geometry = feature->GetGeometryRef();
+			EXPECT_FALSE(geometry->IsEmpty()) << "Geometry must not be empty.";
+		}
+	}
+}
+
+
+TEST_F(GdalTestSuite, SpatialMatch) {
+	auto left_filepath = GdalTestSuite::to_path("geojson.json");
+	auto left_dataset = GdalManagedDataset::open_read(left_filepath);
+	EXPECT_TRUE(left_dataset->is_valid()) << "Dataset is valid.";
+
+	auto right_filepath = GdalTestSuite::to_path("Strassennamen.gpkg");
+	auto right_dataset = GdalManagedDataset::open_read(right_filepath);
+	EXPECT_TRUE(right_dataset->is_valid()) << "Dataset is valid.";
+
+	SpatialMatcher matcher(left_dataset, right_dataset);
+	std::vector<SpatialMatch> matches;
+	matcher.find_best_matches("geojson", "Straßennamen", matches);
 }
 
 
