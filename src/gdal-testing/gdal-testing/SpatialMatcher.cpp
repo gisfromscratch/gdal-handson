@@ -38,18 +38,32 @@ void SpatialMatcher::find_best_matches(const std::string &left_layer_name, const
 		return;
 	}
 
+	auto left_spatialRef = left_layer->GetSpatialRef();
+	auto right_spatialRef = right_layer->GetSpatialRef();
+
+	OGRSpatialReference webMercator;
+	webMercator.SetWellKnownGeogCS("EPSG:3857");
 	for (auto&& left_feature : left_layer)
 	{
+		auto left_id = left_feature->GetFID();
 		auto left_geometry = left_feature->GetGeometryRef();
 		if (nullptr != left_geometry && !left_geometry->IsEmpty())
 		{
-			right_layer->SetSpatialFilter(left_geometry);
+			left_geometry->assignSpatialReference(left_spatialRef);
+			left_geometry->transformTo(&webMercator);
+
+			const double intersection_tolerance = 1.5;
+			auto buffered_left_geometry = left_geometry->Buffer(intersection_tolerance);
+			right_layer->SetSpatialFilter(buffered_left_geometry);
 			GIntBig best_match = -1;
+			double best_match_length = -1;
 			OGRGeometry *best_intersection = nullptr;
 			for (auto&& right_feature : right_layer)
 			{
 				auto right_geometry = right_feature->GetGeometryRef();
-				auto intersection = right_geometry->Intersection(left_geometry);
+				right_geometry->transformTo(&webMercator);
+
+				auto intersection = right_geometry->Intersection(buffered_left_geometry);
 				if (-1 == best_match)
 				{
 					best_match = right_feature->GetFID();
@@ -57,13 +71,28 @@ void SpatialMatcher::find_best_matches(const std::string &left_layer_name, const
 				}
 				else if (!intersection->IsEmpty())
 				{
-					std::cout << intersection->getGeometryType() << std::endl;
 					switch (intersection->getGeometryType())
 					{
 					case wkbLineString:
+						OGRLineString *line = dynamic_cast<OGRLineString*>(intersection);
+						if (nullptr != line)
+						{
+							double line_length = line->get_Length();
+							if (best_match_length < line_length)
+							{
+								best_match = right_feature->GetFID();
+								best_intersection = intersection;
+								best_match_length = line_length;
+							}
+						}
 						break;
 					}
 				}
+			}
+
+			if (-1 != best_match)
+			{
+				matches.push_back(SpatialMatch(left_id, best_match));
 			}
 		}
 	}
